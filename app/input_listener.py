@@ -19,18 +19,12 @@ class InputListener:
        raise NotImplementedError
 
 
-
-
-
 class ScreenInputListener(InputListener):
    def get_recent_inputs(self) -> List[Input]:
        window_handle = FindWindow(None, None)
        window_rect = GetWindowRect(window_handle)
        screen = np.array(ImageGrab.grab(bbox=(window_rect)))
        return [Screen(contents=screen)]
-
-
-
 
 
 class KeyboardInputListener(InputListener):
@@ -64,8 +58,6 @@ class KeyboardInputListener(InputListener):
         return key_events
 
 
-
-
 class MouseInputListener(InputListener):
     def __init__(self):
         self.mouse_events = Queue()
@@ -75,28 +67,34 @@ class MouseInputListener(InputListener):
     def start_listening(self, queue):
 
         def on_movement(self):
-            if moving:
-
-                x, y = pyautogui.position()
-                positionStr = 'X: ' + str(x).rjust(4) + 'Y: ' + str(y).rjust(4)
-                mouse_position = Mouse(direction=positionStr)
-
-        speed =
+            pass
+            # if moving:
+        #         x, y = pyautogui.position()
+        #         positionStr = 'X: ' + str(x).rjust(4) + 'Y: ' + str(y).rjust(4)
+        #         mouse_position = Mouse(direction=positionStr)
+        #
+        # speed =
 
         def on_click(x, y, button, pressed):
-            if pressed:
+            pass
+            # if pressed:
+        #     if button == Button.left:
+        #         mouse_event = (Mouse(button1=button, button2=None))
+        # elif button == Button.right:
+        #     mouse_event = Mouse(button1=None, button2= button)
 
-            #     if button == Button.left:
-            #         mouse_event = (Mouse(button1=button, button2=None))
-            # elif button == Button.right:
-            #     mouse_event = Mouse(button1=None, button2= button)
+        def on_release():
+            pass
 
-        def on_release
-
-        def on_scorll(x, y, dx, dy):
+        def on_scroll(x, y, dx, dy):
             queue.put(Mouse(x=x, y=y, scroll_dx=dx, scroll_dy=dy))
 
-        with mouse.Listener(on_click=on_click, on_movement(), on_scroll=on_scorll) as listener:
+        with mouse.Listener(
+            on_click=on_click,
+            on_movement=on_movement,
+            on_release=on_release,
+            on_scroll=on_scroll,
+        ) as listener:
             listener.join()
 
     def get_recent_inputs(self) -> List[Input]:
