@@ -3,10 +3,12 @@ from enum import Enum, auto
 import numpy as np
 import time
 
+
 class InputType(Enum):
     SCREEN = auto()
     KEYBOARD = auto()
     MOUSE = auto()
+
 
 class Input:
     def serialize(self) -> str:
@@ -44,14 +46,14 @@ class Mouse(Input):
         button2: int,
         direction: float,
         speed: int,
-     ):
+    ):
         self.button1 = button1
         self.button2 = button2
         self.direction = direction
         self.speed = speed
 
     def serialize(self) -> str:
-        return f'{self.button1},{self.button2},{self.direction},{self.speed}'
+        return f"{self.button1},{self.button2},{self.direction},{self.speed}"
 
     def get_input_type(self) -> InputType:
         return InputType.MOUSE
@@ -66,12 +68,12 @@ class Keyboard(Input):
         :param key_change: Dictionary where key is button being changed,
             and value is whether pressed(1) or released (-1)
         """
-        assert len(key_change)==1
+        assert len(key_change) == 1
         self.key_change = key_change
         self.time_stamp = time.time_ns()
 
     def serialize(self) -> str:
-        for key,value in self.key_change.items():
+        for key, value in self.key_change.items():
             return f'{key}{"+" if value==1 else "-"}'
 
     def get_input_type(self) -> InputType:

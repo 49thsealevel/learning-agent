@@ -6,7 +6,7 @@ from PIL import ImageGrab
 from app.inputs import Keyboard
 from app.inputs import Mouse
 from pynput import mouse, keyboard
-from pynput.mouse import Button,
+from pynput.mouse import Button
 from pynput.keyboard import Key
 import time
 import pyautogui
@@ -15,22 +15,22 @@ from multiprocessing import Process, Queue
 
 
 class InputListener:
-   def get_recent_inputs(self) -> List[Input]:
-       raise NotImplementedError
+    def get_recent_inputs(self) -> List[Input]:
+        raise NotImplementedError
 
 
 class ScreenInputListener(InputListener):
-   def get_recent_inputs(self) -> List[Input]:
-       window_handle = FindWindow(None, None)
-       window_rect = GetWindowRect(window_handle)
-       screen = np.array(ImageGrab.grab(bbox=(window_rect)))
-       return [Screen(contents=screen)]
+    def get_recent_inputs(self) -> List[Input]:
+        window_handle = FindWindow(None, None)
+        window_rect = GetWindowRect(window_handle)
+        screen = np.array(ImageGrab.grab(bbox=(window_rect)))
+        return [Screen(contents=screen)]
 
 
 class KeyboardInputListener(InputListener):
     def __init__(self):
         self.key_events = Queue()
-        process =  Process(target=self.start_listening, args=(self.key_events,))
+        process = Process(target=self.start_listening, args=(self.key_events,))
         process.start()
 
     def start_listening(self, queue):
@@ -39,7 +39,7 @@ class KeyboardInputListener(InputListener):
                 pressed = key.char
             except AttributeError:
                 pressed = str(key)
-            queue.put(Keyboard(key_change={pressed:1}))
+            queue.put(Keyboard(key_change={pressed: 1}))
 
         def on_release(key):
             try:
@@ -61,14 +61,14 @@ class KeyboardInputListener(InputListener):
 class MouseInputListener(InputListener):
     def __init__(self):
         self.mouse_events = Queue()
-        process = Process(target= self.start_listening, args=(self.mouse_events,))
+        process = Process(target=self.start_listening, args=(self.mouse_events,))
         process.start()
 
     def start_listening(self, queue):
-
         def on_movement(self):
             pass
             # if moving:
+
         #         x, y = pyautogui.position()
         #         positionStr = 'X: ' + str(x).rjust(4) + 'Y: ' + str(y).rjust(4)
         #         mouse_position = Mouse(direction=positionStr)
@@ -78,6 +78,7 @@ class MouseInputListener(InputListener):
         def on_click(x, y, button, pressed):
             pass
             # if pressed:
+
         #     if button == Button.left:
         #         mouse_event = (Mouse(button1=button, button2=None))
         # elif button == Button.right:

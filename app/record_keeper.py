@@ -4,12 +4,13 @@ from app.storage_handler import StorageHandler
 
 import time
 
+
 class RecordKeeper:
     def __init__(
         self,
         input_listeners: List[InputListener],
         storage_handler: StorageHandler,
-        duration: float=1,
+        duration: float = 1,
     ):
         self.input_listeners = input_listeners
         self.storage_handler = storage_handler
@@ -32,7 +33,7 @@ class RecordKeeper:
         self.keep_running = False
 
 
-#how would you test this? (making sure it works the way you expect it to work)
+# how would you test this? (making sure it works the way you expect it to work)
 
 # how are we going to retreieve inputs for storage handler (the reading), using and iterator pattern, for them to be displayed
 # upload to github repo
