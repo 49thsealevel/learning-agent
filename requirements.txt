@@ -1,6 +1,6 @@
 pytest==6.2.5
 numpy
-#pywin32
+pywin32
 Pillow
 pre-commit
 pynput
