@@ -2,8 +2,6 @@ pytest==6.2.5
 numpy
 pywin32
 Pillow
+pre-commit
 pynput
 pyautogui
-
-#pip install -r requirements.txt
-#pip install --upgrade pip

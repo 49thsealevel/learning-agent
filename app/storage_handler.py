@@ -7,6 +7,7 @@ class StorageHandler:
     def write(self, input: Input):
         raise NotImplementedError
 
+
 class FileSystemStorageHandler(StorageHandler):
     def __init__(self, path: str):
         self.path = path
