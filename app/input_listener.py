@@ -1,47 +1,44 @@
+from multiprocessing import Process, Queue
+import platform
+import time
 from typing import List
-from app.inputs import Input
-from app.inputs import Screen
 
+import numpy as np
 from PIL import ImageGrab
-from app.inputs import Keyboard
-from app.inputs import Mouse
 from pynput import mouse, keyboard
 from pynput.mouse import Button
 from pynput.keyboard import Key
-import time
 import pyautogui
-import numpy as np
-from multiprocessing import Process, Queue
 
-try:
-    from win32gui import FindWindow, GetWindowRect
+from app.inputs import Input
+from app.inputs import Screen
+from app.inputs import Keyboard
+from app.inputs import Mouse
 
-    is_windows = True
-except:
-    is_windows = False
+
+def grab_screen_as_numpy_array() -> np.ndarray:
+    raise NotImplementedError()
+
+
+if platform.system() == "Windows":
+    try:
+        from win32gui import FindWindow, GetWindowRect
+
+        def grab_screen_windows() -> np.ndarray:
+            window_handle = FindWindow(None, None)
+            window_rect = GetWindowRect(window_handle)
+            screen = np.array(ImageGrab.grab(bbox=window_rect))
+            return screen
+
+        grab_screen_as_numpy_array = grab_screen_windows
+    except:
+        raise Exception("Unable to perform necessary import for Windows")
+elif platform.system() == "Darwin":
     try:
         import Quartz.CoreGraphics as CG
         import Quartz
 
-        is_mac = True
-    except:
-        is_mac = False
-
-
-class InputListener:
-    def get_recent_inputs(self) -> List[Input]:
-        raise NotImplementedError
-
-
-class ScreenInputListener(InputListener):
-    def get_recent_inputs(self) -> List[Input]:
-        if is_windows:
-            window_handle = FindWindow(None, None)
-            window_rect = GetWindowRect(window_handle)
-            screen = np.array(ImageGrab.grab(bbox=window_rect))
-            return [Screen(contents=screen)]
-
-        elif is_mac:
+        def grab_screen_mac() -> np.ndarray:
             main_display_id = Quartz.CGMainDisplayID()
             image = CG.CGDisplayCreateImage(main_display_id)
             width = CG.CGImageGetWidth(image)
@@ -52,9 +49,22 @@ class ScreenInputListener(InputListener):
             image = np.frombuffer(pixeldata, dtype=np.uint8)
             image = image.reshape((height, bytesperrow // 4, 4))
             image = image[:, :width, :]
-            return [Screen(contents=image)]
-        else:
-            raise NotImplementedError("Not implemented for non-windows, non-mac")
+            return image
+
+        grab_screen_as_numpy_array = grab_screen_mac
+    except:
+        raise Exception("Unable to perform necessary import for Mac")
+
+
+class InputListener:
+    def get_recent_inputs(self) -> List[Input]:
+        raise NotImplementedError
+
+
+class ScreenInputListener(InputListener):
+    def get_recent_inputs(self) -> List[Input]:
+        screen = grab_screen_as_numpy_array()
+        return [Screen(contents=screen)]
 
 
 class KeyboardInputListener(InputListener):
