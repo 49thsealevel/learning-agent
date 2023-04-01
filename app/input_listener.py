@@ -34,19 +34,18 @@ class KeyboardInputListener(InputListener):
         process.start()
 
     def start_listening(self, queue):
-        def on_press(key):
+        def _add_to_queue(key, direction):
             try:
-                pressed = key.char
+                value = key.char
             except AttributeError:
-                pressed = str(key)
-            queue.put(Keyboard(key_change={pressed: 1}))
+                value = str(key)
+            queue.put(Keyboard(key_change={value: direction}))
+
+        def on_press(key):
+            _add_to_queue(key, 1)
 
         def on_release(key):
-            try:
-                released = key.char
-            except AttributeError:
-                released = str(key)
-            queue.put(Keyboard(key_change={released: -1}))
+            _add_to_queue(key, -1)
 
         with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
             listener.join()
