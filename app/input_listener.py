@@ -15,12 +15,14 @@ from multiprocessing import Process, Queue
 
 try:
     from win32gui import FindWindow, GetWindowRect
+
     is_windows = True
 except:
     is_windows = False
     try:
         import Quartz.CoreGraphics as CG
         import Quartz
+
         is_mac = True
     except:
         is_mac = False
@@ -41,18 +43,24 @@ class ScreenInputListener(InputListener):
 
         elif is_mac:
             main_display_id = Quartz.CGMainDisplayID()
-            screen_rect = Quartz.CGDisplayBounds(main_display_id)
+            # screen_rect = Quartz.CGDisplayBounds(main_display_id)
 
             # Capture the screen image
             image = CG.CGDisplayCreateImage(
                 main_display_id,
-                screen_rect
+                # screen_rect
             )
+            width = CG.CGImageGetWidth(image)
+            height = CG.CGImageGetHeight(image)
+            bytesperrow = CG.CGImageGetBytesPerRow(image)
 
-            return image
+            pixeldata = CG.CGDataProviderCopyData(CG.CGImageGetDataProvider(image))
+            image = np.frombuffer(pixeldata, dtype=np.uint8)
+            image = image.reshape((height, bytesperrow // 4, 4))
+            image = image[:, :width, :]
+            return [Screen(contents=image)]
         else:
-            raise NotImplementedError('Not implemented for non-windows, non-mac')
-
+            raise NotImplementedError("Not implemented for non-windows, non-mac")
 
 
 class KeyboardInputListener(InputListener):
