@@ -29,8 +29,9 @@ def test_record_keeper_with_empty_input():
 
 
 def test_record_keeper_with_input():
+    expected_val = "Knock knock. Who's there?"
     input_mock = MagicMock()
-    input_mock.serialize.return_value = "My wife is a pig"
+    input_mock.serialize.return_value = expected_val
     input_listener_mock = MagicMock()
     input_listener_mock.get_recent_inputs.return_value = [input_mock, input_mock]
     storage_handler_mock = MagicMock()
@@ -47,7 +48,7 @@ def test_record_keeper_with_input():
     record_keeper.should_keep_running = test_keep_running
     record_keeper.start_keeping_records()
     assert storage_handler_mock.write.call_count == 2
-    storage_handler_mock.write.assert_called_with("My wife is a pig")
+    storage_handler_mock.write.assert_called_with(expected_val)
     input_listener_mock.get_recent_inputs.assert_called_once()
 
 
