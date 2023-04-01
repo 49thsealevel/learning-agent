@@ -1,7 +1,7 @@
 from typing import List
 from app.inputs import Input
 from app.inputs import Screen
-from win32gui import FindWindow, GetWindowRect
+
 from PIL import ImageGrab
 from app.inputs import Keyboard
 from app.inputs import Mouse
@@ -12,6 +12,11 @@ import time
 import pyautogui
 import numpy as np
 from multiprocessing import Process, Queue
+
+try:
+    from win32gui import FindWindow, GetWindowRect
+except:
+    print('must be mac')
 
 
 class InputListener:
