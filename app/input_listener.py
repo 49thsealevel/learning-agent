@@ -43,13 +43,7 @@ class ScreenInputListener(InputListener):
 
         elif is_mac:
             main_display_id = Quartz.CGMainDisplayID()
-            # screen_rect = Quartz.CGDisplayBounds(main_display_id)
-
-            # Capture the screen image
-            image = CG.CGDisplayCreateImage(
-                main_display_id,
-                # screen_rect
-            )
+            image = CG.CGDisplayCreateImage(main_display_id)
             width = CG.CGImageGetWidth(image)
             height = CG.CGImageGetHeight(image)
             bytesperrow = CG.CGImageGetBytesPerRow(image)
