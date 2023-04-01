@@ -1,10 +1,7 @@
 from multiprocessing import Process, Queue
 import platform
-import time
 from typing import List
 
-import numpy as np
-from PIL import ImageGrab
 from pynput import mouse, keyboard
 from pynput.mouse import Button
 from pynput.keyboard import Key
@@ -14,46 +11,16 @@ from app.inputs import Input
 from app.inputs import Screen
 from app.inputs import Keyboard
 from app.inputs import Mouse
+from app.io.screen_grabber import ScreenGrabber
+from app.io.screen_grabber import WindowsScreenGrabber
+from app.io.screen_grabber import MacScreenGrabber
 
 
-def grab_screen_as_numpy_array() -> np.ndarray:
-    raise NotImplementedError()
-
-
+screen_grabber = ScreenGrabber()
 if platform.system() == "Windows":
-    try:
-        from win32gui import FindWindow, GetWindowRect
-
-        def grab_screen_windows() -> np.ndarray:
-            window_handle = FindWindow(None, None)
-            window_rect = GetWindowRect(window_handle)
-            screen = np.array(ImageGrab.grab(bbox=window_rect))
-            return screen
-
-        grab_screen_as_numpy_array = grab_screen_windows
-    except:
-        raise Exception("Unable to perform necessary import for Windows")
+    screen_grabber = WindowsScreenGrabber()
 elif platform.system() == "Darwin":
-    try:
-        import Quartz.CoreGraphics as CG
-        import Quartz
-
-        def grab_screen_mac() -> np.ndarray:
-            main_display_id = Quartz.CGMainDisplayID()
-            image = CG.CGDisplayCreateImage(main_display_id)
-            width = CG.CGImageGetWidth(image)
-            height = CG.CGImageGetHeight(image)
-            bytesperrow = CG.CGImageGetBytesPerRow(image)
-
-            pixeldata = CG.CGDataProviderCopyData(CG.CGImageGetDataProvider(image))
-            image = np.frombuffer(pixeldata, dtype=np.uint8)
-            image = image.reshape((height, bytesperrow // 4, 4))
-            image = image[:, :width, :]
-            return image
-
-        grab_screen_as_numpy_array = grab_screen_mac
-    except:
-        raise Exception("Unable to perform necessary import for Mac")
+    screen_grabber = MacScreenGrabber()
 
 
 class InputListener:
@@ -63,7 +30,7 @@ class InputListener:
 
 class ScreenInputListener(InputListener):
     def get_recent_inputs(self) -> List[Input]:
-        screen = grab_screen_as_numpy_array()
+        screen = screen_grabber.grab_screen()
         return [Screen(contents=screen)]
 
 
