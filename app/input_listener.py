@@ -71,7 +71,7 @@ class MouseInputListener(InputListener):
         process.start()
 
     def start_listening(self, queue):
-        def on_movement(self):
+        def on_move(self):
             pass
             # if moving:
 

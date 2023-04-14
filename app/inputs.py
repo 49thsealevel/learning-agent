@@ -44,16 +44,16 @@ class Mouse(Input):
         self,
         button1: int,
         button2: int,
-        direction: float,
-        speed: int,
+        x: int,
+        y: int,
     ):
         self.button1 = button1
         self.button2 = button2
-        self.direction = direction
-        self.speed = speed
+        self.x = x
+        self.y = y
 
     def serialize(self) -> str:
-        return f"{self.button1},{self.button2},{self.direction},{self.speed}"
+        return f"{self.button1},{self.button2},{self.x},{self.y}"
 
     def get_input_type(self) -> InputType:
         return InputType.MOUSE
