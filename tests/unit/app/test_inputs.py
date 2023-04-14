@@ -26,33 +26,33 @@ def test_screen_serialization():
     contents = np.zeros((2, 2))
     screen = Screen(contents)
     data = screen.serialize()
-    assert data == pickle.dumps(contents)
+    assert data == str(pickle.dumps(contents))
     contents = np.ones((50, 700, 30))
     screen = Screen(contents)
     data = screen.serialize()
-    assert data == pickle.dumps(contents)
+    assert data == str(pickle.dumps(contents))
 
 
 def test_mouse():
-    mouse = Mouse(button1=0, button2=0, direction=0, speed=0)
+    mouse = Mouse(button1=0, button2=0, x=0, y=0)
     assert mouse is not None
     assert type(mouse) == Mouse
     assert issubclass(Mouse, Input)
 
 
 def test_mouse_contents():
-    mouse = Mouse(button1=1, button2=0, direction=70.3, speed=3)
+    mouse = Mouse(button1=1, button2=0, x=70, y=3)
     assert mouse is not None
     assert mouse.button1 == 1
     assert mouse.button2 == 0
-    assert mouse.direction == 70.3
-    assert mouse.speed == 3
+    assert mouse.x == 70
+    assert mouse.y == 3
 
 
 def test_mouse_serialization():
-    mouse = Mouse(button1=0, button2=1, direction=144.6, speed=7)
+    mouse = Mouse(button1=0, button2=1, x=144, y=7)
     data = mouse.serialize()
-    assert data == "0,1,144.6,7"
+    assert data == "0,1,144,7"
 
 
 def test_keyboard():
