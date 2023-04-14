@@ -1,17 +1,26 @@
+from multiprocessing import Process, Queue
+import platform
 from typing import List
-from app.inputs import Input
-from app.inputs import Screen
-from win32gui import FindWindow, GetWindowRect
-from PIL import ImageGrab
-from app.inputs import Keyboard
-from app.inputs import Mouse
+
 from pynput import mouse, keyboard
 from pynput.mouse import Button
 from pynput.keyboard import Key
-import time
 import pyautogui
-import numpy as np
-from multiprocessing import Process, Queue
+
+from app.inputs import Input
+from app.inputs import Screen
+from app.inputs import Keyboard
+from app.inputs import Mouse
+from app.io.screen_grabber import ScreenGrabber
+from app.io.screen_grabber import WindowsScreenGrabber
+from app.io.screen_grabber import MacScreenGrabber
+
+
+screen_grabber = ScreenGrabber()
+if platform.system() == "Windows":
+    screen_grabber = WindowsScreenGrabber()
+elif platform.system() == "Darwin":
+    screen_grabber = MacScreenGrabber()
 
 
 class InputListener:
@@ -21,9 +30,7 @@ class InputListener:
 
 class ScreenInputListener(InputListener):
     def get_recent_inputs(self) -> List[Input]:
-        window_handle = FindWindow(None, None)
-        window_rect = GetWindowRect(window_handle)
-        screen = np.array(ImageGrab.grab(bbox=(window_rect)))
+        screen = screen_grabber.grab_screen()
         return [Screen(contents=screen)]
 
 

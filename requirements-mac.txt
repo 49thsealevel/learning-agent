@@ -1,0 +1,7 @@
+pytest==6.2.5
+numpy
+Pillow
+pre-commit
+pynput
+pyautogui
+pyobjc
