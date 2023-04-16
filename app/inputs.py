@@ -1,7 +1,9 @@
+import json
 import pickle
 from enum import Enum, auto
 import numpy as np
 import time
+import base64
 
 
 class InputType(Enum):
@@ -54,7 +56,7 @@ class Mouse(Input):
         self.y = y
 
     def serialize(self) -> str:
-        return f"{self.button1},{self.button2},{self.x},{self.y}"
+        return f"{self.button1},{self.button2},{self.x},{self.y},{self.time_stamp}"
 
     def get_input_type(self) -> InputType:
         return InputType.MOUSE
@@ -74,8 +76,9 @@ class Keyboard(Input):
         self.time_stamp = time.time_ns()
 
     def serialize(self) -> str:
-        for key, value in self.key_change.items():
-            return f'{key}{"+" if value==1 else "-"}'
+        self.key_change["time_stamp"] = self.time_stamp
+        base64_bytes = base64.b64encode(json.dumps(self.key_change).encode("ascii"))
+        return str(base64_bytes)
 
     def get_input_type(self) -> InputType:
         return InputType.KEYBOARD

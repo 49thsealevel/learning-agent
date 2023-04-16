@@ -1,9 +1,3 @@
-import numpy as np
-import pytest
-
-from app.inputs import Screen
-from app.inputs import Mouse
-from app.inputs import Keyboard
 from app.record_keeper import RecordKeeper
 from unittest.mock import MagicMock
 
@@ -24,6 +18,7 @@ def test_record_keeper_with_empty_input():
 
     record_keeper.should_keep_running = test_keep_running
     record_keeper.start_keeping_records()
+    # we are calling it
     storage_handler_mock.write.assert_not_called()
     input_listener_mock.get_recent_inputs.assert_called_once()
 
@@ -45,7 +40,9 @@ def test_record_keeper_with_input():
 
     record_keeper.should_keep_running = test_keep_running
     record_keeper.start_keeping_records()
+    # call count needs to be same as batch count
     assert storage_handler_mock.write.call_count == 2
+    # this will fail, (input_mock) = varaible_that_holds = [input_mock, input_mock]
     storage_handler_mock.write.assert_called_with(input_mock)
     input_listener_mock.get_recent_inputs.assert_called_once()
 

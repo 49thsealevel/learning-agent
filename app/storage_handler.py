@@ -1,10 +1,10 @@
-import time
 import os
 from app.inputs import Input
+from typing import List
 
 
 class StorageHandler:
-    def write(self, input: Input):
+    def write(self, inputs: List[Input]):
         raise NotImplementedError
 
 
@@ -12,12 +12,20 @@ class FileSystemStorageHandler(StorageHandler):
     def __init__(self, path: str):
         self.path = path
 
-    def write(self, input: Input):
-        directory = os.path.join(self.path, input.get_input_type().name)
-        if not os.path.isdir(directory):
-            os.makedirs(directory)
-        time_stamp = input.get_time_stamp()
-        filename = os.path.join(directory, f"{time_stamp}.dat")
+    def write(self, inputs: List[Input]):
+        if len(inputs) == 0:
+            return
+        filename = None
+        for input in inputs:
+            if filename is None:
+                directory = os.path.join(self.path, input.get_input_type().name)
+                if not os.path.isdir(directory):
+                    os.makedirs(directory)
+                time_stamp = input.get_time_stamp()
+                filename = os.path.join(directory, f"{time_stamp}.dat")
+                break
 
         with open(filename, "w") as f:
-            f.write(input.serialize())
+            for input in inputs:
+                f.write(input.serialize())
+                f.write("\n")

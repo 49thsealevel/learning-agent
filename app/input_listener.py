@@ -2,11 +2,8 @@ from multiprocessing import Process, Queue
 import platform
 from typing import List
 
-from pynput import mouse, keyboard
+from pynput import keyboard
 from pynput.mouse import Button, Listener
-from pynput.keyboard import Key
-import time
-
 
 from app.inputs import Input
 from app.inputs import Screen

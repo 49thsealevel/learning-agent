@@ -69,9 +69,10 @@ def test_keyboard_contents():
     assert keyboard.key_change["space"] == -1
 
 
-def text_keyboard_serialization():
+def test_keyboard_serialization():
     keyboard = Keyboard(key_change={"enter": 1})
     data = keyboard.serialize()
+    # print data copy printed value to what you are asserting
     assert data == "enter+"
     keyboard = Keyboard(key_change={"space": -1})
     data = keyboard.serialize()
