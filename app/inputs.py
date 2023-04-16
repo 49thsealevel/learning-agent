@@ -47,6 +47,7 @@ class Mouse(Input):
         x: int,
         y: int,
     ):
+        self.time_stamp = time.time_ns()
         self.button1 = button1
         self.button2 = button2
         self.x = x
@@ -59,7 +60,7 @@ class Mouse(Input):
         return InputType.MOUSE
 
     def get_time_stamp(self) -> int:
-        return 0
+        return self.time_stamp
 
 
 class Keyboard(Input):

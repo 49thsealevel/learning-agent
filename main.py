@@ -1,7 +1,11 @@
 import argparse
 from argparse import Namespace
 
-from app.input_listener import ScreenInputListener, KeyboardInputListener
+from app.input_listener import (
+    ScreenInputListener,
+    KeyboardInputListener,
+    MouseInputListener,
+)
 from app.storage_handler import FileSystemStorageHandler
 from app.record_keeper import RecordKeeper
 
@@ -9,14 +13,23 @@ from app.record_keeper import RecordKeeper
 def main(args: Namespace):
     screen_input_listener = ScreenInputListener()
     keyboard_input_listener = KeyboardInputListener()
+    mouse_input_listener = MouseInputListener()
     handler = FileSystemStorageHandler(path=args.path)
     record_keeper = RecordKeeper(
-        input_listeners=[screen_input_listener, keyboard_input_listener],
+        input_listeners=[
+            screen_input_listener,
+            keyboard_input_listener,
+            mouse_input_listener,
+        ],
         storage_handler=handler,
-        duration=5,
+        duration=1,
     )
 
-    record_keeper.start_keeping_records()
+    try:
+        record_keeper.start_keeping_records()
+    except:
+        for input_listener in record_keeper.input_listeners:
+            input_listener.close()
 
 
 if __name__ == "__main__":

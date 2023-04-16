@@ -1,4 +1,18 @@
 import numpy as np
+import platform
+from PIL import ImageGrab
+
+if platform.system() == "Windows":
+    try:
+        from win32gui import FindWindow, GetWindowRect
+    except:
+        raise Exception("Unable to perform necessary import for Windows")
+elif platform.system() == "Darwin":
+    try:
+        import Quartz.CoreGraphics as CG
+        import Quartz
+    except:
+        raise Exception("Unable to perform necessary import for Mac")
 
 
 class ScreenGrabber:
@@ -7,12 +21,6 @@ class ScreenGrabber:
 
 
 class WindowsScreenGrabber(ScreenGrabber):
-    def __init__(self):
-        try:
-            from win32gui import FindWindow, GetWindowRect
-        except:
-            raise Exception("Unable to perform necessary import for Windows")
-
     def grab_screen(self):
         window_handle = FindWindow(None, None)
         window_rect = GetWindowRect(window_handle)
@@ -21,13 +29,6 @@ class WindowsScreenGrabber(ScreenGrabber):
 
 
 class MacScreenGrabber(ScreenGrabber):
-    def __init__(self):
-        try:
-            import Quartz.CoreGraphics as CG
-            import Quartz
-        except:
-            raise Exception("Unable to perform necessary import for Mac")
-
     def grab_screen(self) -> np.ndarray:
         main_display_id = Quartz.CGMainDisplayID()
         image = CG.CGDisplayCreateImage(main_display_id)
