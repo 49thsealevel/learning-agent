@@ -3,9 +3,10 @@ import platform
 from typing import List
 
 from pynput import mouse, keyboard
-from pynput.mouse import Button
+from pynput.mouse import Button, Listener
 from pynput.keyboard import Key
-import pyautogui
+import time
+
 
 from app.inputs import Input
 from app.inputs import Screen
@@ -27,6 +28,9 @@ class InputListener:
     def get_recent_inputs(self) -> List[Input]:
         raise NotImplementedError
 
+    def close(self):
+        pass
+
 
 class ScreenInputListener(InputListener):
     def get_recent_inputs(self) -> List[Input]:
@@ -37,8 +41,11 @@ class ScreenInputListener(InputListener):
 class KeyboardInputListener(InputListener):
     def __init__(self):
         self.key_events = Queue()
-        process = Process(target=self.start_listening, args=(self.key_events,))
-        process.start()
+        self.process = Process(target=self.start_listening, args=(self.key_events,))
+        self.process.start()
+
+    def close(self):
+        self.process.kill()
 
     def start_listening(self, queue):
         def _add_to_queue(key, direction):
@@ -67,44 +74,34 @@ class KeyboardInputListener(InputListener):
 class MouseInputListener(InputListener):
     def __init__(self):
         self.mouse_events = Queue()
-        process = Process(target=self.start_listening, args=(self.mouse_events,))
-        process.start()
+        self.process = Process(target=self.start_listening, args=(self.mouse_events,))
+        self.process.start()
+
+    def close(self):
+        self.process.kill()
 
     def start_listening(self, queue):
-        def on_move(self):
-            pass
-            # if moving:
-
-        #         x, y = pyautogui.position()
-        #         positionStr = 'X: ' + str(x).rjust(4) + 'Y: ' + str(y).rjust(4)
-        #         mouse_position = Mouse(direction=positionStr)
-        #
-        # speed =
+        def on_move(x, y):
+            mouse_instance = Mouse(button1=0, button2=0, x=x, y=y)
+            queue.put(mouse_instance)
 
         def on_click(x, y, button, pressed):
-            pass
-            # if pressed:
+            if button == Button.left:
+                button1 = 1 if pressed else -1
+                button2 = 0
+            elif button == Button.right:
+                button2 = 1 if pressed else -1
+                button1 = 0
+            else:
+                button1 = 0
+                button2 = 0
+            mouse = Mouse(button1=button1, button2=button2, x=x, y=y)
+            queue.put(mouse)
 
-        #     if button == Button.left:
-        #         mouse_event = (Mouse(button1=button, button2=None))
-        # elif button == Button.right:
-        #     mouse_event = Mouse(button1=None, button2= button)
-
-        def on_release():
-            pass
-
-        def on_scroll(x, y, dx, dy):
-            queue.put(Mouse(x=x, y=y, scroll_dx=dx, scroll_dy=dy))
-
-        with mouse.Listener(
-            on_click=on_click,
-            on_movement=on_movement,
-            on_release=on_release,
-            on_scroll=on_scroll,
-        ) as listener:
+        with Listener(on_move=on_move, on_click=on_click) as listener:
             listener.join()
 
-    def get_recent_inputs(self) -> List[Input]:
+    def get_recent_inputs(self) -> List[Mouse]:
         mouse_events = []
         while not self.mouse_events.empty():
             mouse_events.append(self.mouse_events.get_nowait())
