@@ -18,7 +18,6 @@ def test_record_keeper_with_empty_input():
 
     record_keeper.should_keep_running = test_keep_running
     record_keeper.start_keeping_records()
-    # we are calling it
     storage_handler_mock.write.assert_called_once_with([])
     input_listener_mock.get_recent_inputs.assert_called_once()
 
