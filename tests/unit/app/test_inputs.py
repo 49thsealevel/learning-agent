@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import json
 
 from app.inputs import Screen
 from app.inputs import Input
@@ -52,7 +53,7 @@ def test_mouse_contents():
 def test_mouse_serialization():
     mouse = Mouse(button1=0, button2=1, x=144, y=7)
     data = mouse.serialize()
-    assert data == "0,1,144,7"
+    assert data == "0,1,144,7," + str(mouse.time_stamp)
 
 
 def test_keyboard():
@@ -69,14 +70,39 @@ def test_keyboard_contents():
     assert keyboard.key_change["space"] == -1
 
 
+# def test_keyboard_serialization():
+#     keyboard = Keyboard(key_change={"enter": 1})
+#     data = keyboard.serialize()
+#     assert data == json.dumps({"enter": 1, "time_stamp": keyboard.get_time_stamp()}).encode()
+#
+#     keyboard = Keyboard(key_change={"space": -1})
+#     data = keyboard.serialize()
+#     assert data == json.dumps({"space": -1, "time_stamp": keyboard.get_time_stamp()}).encode()
+
+
 def test_keyboard_serialization():
-    keyboard = Keyboard(key_change={"enter": 1})
+    key_change = {"enter": 1}
+    time_stamp = 1681617667885778100
+
+    keyboard = Keyboard(key_change=key_change)
+    keyboard.time_stamp = time_stamp
+
     data = keyboard.serialize()
-    # print data copy printed value to what you are asserting
-    assert data == "enter+"
-    keyboard = Keyboard(key_change={"space": -1})
-    data = keyboard.serialize()
-    assert data == "space-"
+    expected_data = (
+        "b'eyJlbnRlciI6IDEsICJ0aW1lX3N0YW1wIjogMTY4MTYxNzY2Nzg4NTc3ODEwMH0='"
+    )
+
+    assert data == expected_data
+
+
+# def test_keyboard_serialization():
+#     keyboard = Keyboard(key_change={"enter": 1})
+#     data = keyboard.serialize()
+#     # print data copy printed value to what you are asserting
+#     assert data == "enter+"
+#     keyboard = Keyboard(key_change={"space": -1})
+#     data = keyboard.serialize()
+#     assert data == "space-"
 
 
 def test_invalid_keyboard():

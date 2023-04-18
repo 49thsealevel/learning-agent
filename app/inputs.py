@@ -49,11 +49,11 @@ class Mouse(Input):
         x: int,
         y: int,
     ):
-        self.time_stamp = time.time_ns()
         self.button1 = button1
         self.button2 = button2
         self.x = x
         self.y = y
+        self.time_stamp = time.time_ns()
 
     def serialize(self) -> str:
         return f"{self.button1},{self.button2},{self.x},{self.y},{self.time_stamp}"

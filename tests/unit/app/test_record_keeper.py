@@ -19,14 +19,15 @@ def test_record_keeper_with_empty_input():
     record_keeper.should_keep_running = test_keep_running
     record_keeper.start_keeping_records()
     # we are calling it
-    storage_handler_mock.write.assert_not_called()
+    storage_handler_mock.write.assert_called_once_with([])
     input_listener_mock.get_recent_inputs.assert_called_once()
 
 
 def test_record_keeper_with_input():
     input_mock = MagicMock()
     input_listener_mock = MagicMock()
-    input_listener_mock.get_recent_inputs.return_value = [input_mock, input_mock]
+    input_list = [input_mock, input_mock]
+    input_listener_mock.get_recent_inputs.return_value = input_list
     storage_handler_mock = MagicMock()
     record_keeper = RecordKeeper(
         input_listeners=[input_listener_mock],
@@ -40,10 +41,8 @@ def test_record_keeper_with_input():
 
     record_keeper.should_keep_running = test_keep_running
     record_keeper.start_keeping_records()
-    # call count needs to be same as batch count
-    assert storage_handler_mock.write.call_count == 2
-    # this will fail, (input_mock) = varaible_that_holds = [input_mock, input_mock]
-    storage_handler_mock.write.assert_called_with(input_mock)
+    assert storage_handler_mock.write.call_count == 1
+    storage_handler_mock.write.assert_called_with(input_list)
     input_listener_mock.get_recent_inputs.assert_called_once()
 
 
