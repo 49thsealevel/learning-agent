@@ -22,8 +22,7 @@ class RecordKeeper:
         while self.should_keep_running():
             for input_listener in self.input_listeners:
                 inputs = input_listener.get_recent_inputs()
-                for j in inputs:
-                    self.storage_handler.write(j)
+                self.storage_handler.write(inputs)
             time.sleep(self.duration)
 
     def should_keep_running(self):
