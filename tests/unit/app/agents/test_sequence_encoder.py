@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 from torch.nn.utils.rnn import pad_sequence
 
 from app.agents.sequence_encoder import LSTMAutoencoder
@@ -11,7 +10,6 @@ def test_seq_to_seq_training():
     hidden_size = 8
     num_layers = 1
     autoencoder = LSTMAutoencoder(input_size, hidden_size, num_layers)
-
     # Define the training data with variable-length sequences
     data = [
         torch.tensor([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]], dtype=torch.float32),

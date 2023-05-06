@@ -1,4 +1,7 @@
 from math import prod
+from typing import Iterable
+from typing import Optional
+from typing import Tuple
 
 import torch
 import torch.nn as nn
@@ -6,7 +9,12 @@ from torch.nn.utils.rnn import pack_padded_sequence
 
 
 class LSTMEncoder(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers):
+    def __init__(
+        self,
+        input_size: Iterable[int],
+        hidden_size: int,
+        num_layers: int,
+     ) -> None:
         super().__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
@@ -17,7 +25,12 @@ class LSTMEncoder(nn.Module):
             batch_first=True,
         )
 
-    def forward(self, x, hidden=None, cell=None):
+    def forward(
+        self,
+        x: torch.Tensor,
+        hidden: Optional[torch.Tensor] = None,
+        cell: Optional[torch.Tensor] = None,
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         hx = None
         if hidden is not None:
             hx = (hidden, cell)
@@ -26,7 +39,12 @@ class LSTMEncoder(nn.Module):
 
 
 class LSTMDecoder(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers):
+    def __init__(
+        self,
+        input_size: Iterable[int],
+        hidden_size: int,
+        num_layers: int,
+    ) -> None:
         super().__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
@@ -42,7 +60,12 @@ class LSTMDecoder(nn.Module):
             out_features=prod(input_size),
         )
 
-    def forward(self, x, hidden=None, cell=None):
+    def forward(
+        self,
+        x: torch.Tensor,
+        hidden: Optional[torch.Tensor] = None,
+        cell: Optional[torch.Tensor] = None,
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         hx = None
         if hidden is not None:
             hx = (hidden, cell)
@@ -52,7 +75,12 @@ class LSTMDecoder(nn.Module):
 
 
 class LSTMAutoencoder(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers):
+    def __init__(
+        self,
+        input_size: Iterable[int],
+        hidden_size: int,
+        num_layers: int,
+    ) -> None:
         super().__init__()
         self.input_size = input_size
         self.encoder = LSTMEncoder(
@@ -70,7 +98,14 @@ class LSTMAutoencoder(nn.Module):
 
         self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-2)
 
-    def forward(self, x, seq_len):
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.to(self.device)
+
+    def forward(
+        self,
+        x: torch.Tensor,
+        seq_len: torch.Tensor,
+    ):
         """
         Autoencoder needs the sequence lengths for the inputs, so that it can pack the sequences
         for batching
@@ -90,9 +125,13 @@ class LSTMAutoencoder(nn.Module):
 
         # The inputs start with zeros for action_size, and all following actions should
         # match the actions taken.
-        dec_input = torch.zeros((batch_size, 1, *self.input_size), dtype=torch.float32)
+        dec_input = torch.zeros(
+            (batch_size, 1, *self.input_size),
+            device=self.device,
+            dtype=torch.float32,
+        )
 
-        dec_input = dec_input + (0.1**0.5) * torch.randn(*dec_input.size())
+        dec_input = dec_input + self.generate_noise(dec_input.size())
 
         # Predictions are per timestep, we want results to line up with batch,
         # So we append to the batch's list, and concat at the end.
@@ -103,13 +142,20 @@ class LSTMAutoencoder(nn.Module):
             dec_input, hidden, cell = self.decoder(dec_input, hidden, cell)
             for j in range(batch_size):
                 dec_outputs[j].append(dec_input[j, :, :])
-            dec_input = dec_input + (0.1 ** 0.5) * torch.randn(*dec_input.size())
+            dec_input = dec_input + self.generate_noise(dec_input.size())
 
         # Create
         outputs = torch.cat([torch.cat(o) for o in dec_outputs])
         return outputs.view(batch_size, max_seq_len, *self.input_size)
 
-    def train_iter(self, batched_padded_inputs, sequence_lengths) -> None:
+    def generate_noise(self, size: Iterable[int]) -> torch.Tensor:
+        return (0.1**0.5) * torch.randn(*size, device=self.device)
+
+    def train_iter(
+        self,
+        batched_padded_inputs: torch.Tensor,
+        sequence_lengths: torch.Tensor,
+    ) -> None:
         mask = torch.arange(0, len(batched_padded_inputs) + 1).unsqueeze(0) < sequence_lengths.unsqueeze(1)
 
         output = self.forward(batched_padded_inputs, sequence_lengths)
