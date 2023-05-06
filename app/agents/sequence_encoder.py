@@ -66,6 +66,10 @@ class LSTMAutoencoder(nn.Module):
             num_layers=num_layers,
         )
 
+        self.loss_1 = nn.MSELoss()
+
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-2)
+
     def forward(self, x, seq_len):
         """
         Autoencoder needs the sequence lengths for the inputs, so that it can pack the sequences
@@ -104,3 +108,15 @@ class LSTMAutoencoder(nn.Module):
         # Create
         outputs = torch.cat([torch.cat(o) for o in dec_outputs])
         return outputs.view(batch_size, max_seq_len, *self.input_size)
+
+    def train_iter(self, batched_padded_inputs, sequence_lengths) -> None:
+        mask = torch.arange(0, len(batched_padded_inputs) + 1).unsqueeze(0) < sequence_lengths.unsqueeze(1)
+
+        output = self.forward(batched_padded_inputs, sequence_lengths)
+
+        self.optimizer.zero_grad()
+        # Output is shape (batch_size, max_sequence_len, prediction)
+        # Need to mask the unwanted elements in output and padded input
+        loss = self.loss_1(output[mask], batched_padded_inputs[mask])
+        loss.backward()
+        self.optimizer.step()
