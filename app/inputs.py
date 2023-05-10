@@ -29,10 +29,8 @@ class Screen(Input):
         self.time_stamp = time.time_ns()
 
     def serialize(self) -> str:
-        # Bytestring option
         serialized = pickle.dumps(self.contents)
-        # deserialized_a = pickle.loads(serialized)
-        return str(serialized)
+        return serialized.hex()
 
     def get_input_type(self) -> InputType:
         return InputType.SCREEN
