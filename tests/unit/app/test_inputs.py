@@ -2,10 +2,8 @@ import numpy as np
 import pytest
 import json
 
-from app.inputs import Screen
+from app.input.core import Screen, Mouse, Keyboard
 from app.inputs import Input
-from app.inputs import Mouse
-from app.inputs import Keyboard
 import pickle
 
 
