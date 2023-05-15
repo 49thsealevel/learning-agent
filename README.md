@@ -22,9 +22,9 @@ trainable, and take actions.  Lastly, the activity of the agent will be monitora
 real-time in the UI.
 
 ## Implementation
-The goal is to make this work cross-platform.  Initially, it should work on Windows 
+The goal is to make this work cross-platform.  Initially, it should work on Windows
 and Mac. Work may additionally be done eventually to extend to Linux, although the
 class structure should allow this easily.
 
-All machine learning work will be done in PyTorch within this project, but will be 
+All machine learning work will be done in PyTorch within this project, but will be
 encapsulated in specific classes for easy changeability.
