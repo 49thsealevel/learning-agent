@@ -23,7 +23,8 @@ def main(args: Namespace):
 
     try:
         record_keeper.start_keeping_records()
-    except:
+    except Exception as e:
+        print(e)
         for input_listener in record_keeper.input_listeners:
             input_listener.close()
 
@@ -39,8 +40,4 @@ if __name__ == "__main__":
 
     # Parse the arguments
     args = parser.parse_args()
-
     main(args)
-
-    # define a keyboard input listener (googling, listening to keyboard events etc)
-    # research relevant package(s), but try!!!
