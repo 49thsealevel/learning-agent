@@ -9,5 +9,3 @@ class InputListener:
 
     def close(self):
         pass
-
-

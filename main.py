@@ -1,7 +1,11 @@
 import argparse
 from argparse import Namespace
 
-from app.input.core import ScreenInputListener, KeyboardInputListener, MouseInputListener
+from app.input.core import (
+    ScreenInputListener,
+    KeyboardInputListener,
+    MouseInputListener,
+)
 from app.storage_handlers.core import FileSystemStorageHandler
 from app.record_keeper import RecordKeeper
 

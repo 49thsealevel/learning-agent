@@ -5,6 +5,7 @@ import platform
 import time
 from multiprocessing import Queue, Process
 from typing import List
+from typing import Optional
 
 import numpy as np
 from pynput import keyboard
@@ -44,10 +45,14 @@ class Screen(Input):
 
 
 class ScreenInputListener(InputListener):
-    def get_recent_inputs(self) -> List[Input]:
-        screen = screen_grabber.grab_screen()
-        return [Screen(contents=screen)]
+    def __init__(self, grabber: Optional[ScreenGrabber]):
+        if grabber is None:
+            grabber = screen_grabber
+        self.screen_grabber = grabber
 
+    def get_recent_inputs(self) -> List[Input]:
+        screen = self.screen_grabber.grab_screen()
+        return [Screen(contents=screen)]
 
 
 class Keyboard(Input):
