@@ -26,13 +26,14 @@ elif platform.system() == "Darwin":
 
 
 class Screen(Input):
-    def __init__(self, contents: np.ndarray):
+    def __init__(self, contents: np.ndarray, time_stamp=None):
         self.contents = contents
-        self.time_stamp = time.time_ns()
+        self.time_stamp = time.time_ns() if time_stamp is None else time_stamp
 
     def serialize(self) -> str:
         serialized = pickle.dumps(self.contents)
-        return serialized.hex()
+        serialized = f"{self.time_stamp}|{serialized.hex()}"
+        return serialized
 
     def get_input_type(self) -> InputType:
         return InputType.SCREEN
