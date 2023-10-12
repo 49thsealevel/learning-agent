@@ -25,6 +25,7 @@ def test_screen_serialization():
     contents = np.zeros((2, 2))
     screen = Screen(contents)
     data = screen.serialize()
+    print(pickle.loads(bytes.fromhex(data)))
     assert data == str(pickle.dumps(contents))
     contents = np.ones((50, 700, 30))
     screen = Screen(contents)
