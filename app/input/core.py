@@ -49,19 +49,18 @@ class ScreenInputListener(InputListener):
 
 
 class Keyboard(Input):
-    def __init__(self, key_change: dict[str, int]):
+    def __init__(self, key_change: dict[str, int], time_stamp=None):
         """
         :param key_change: Dictionary where key is button being changed,
             and value is whether pressed(1) or released (-1)
         """
-        assert len(key_change) == 1
         self.key_change = key_change
-        self.time_stamp = time.time_ns()
+        self.time_stamp = time.time_ns() if time_stamp is None else time_stamp
 
     def serialize(self) -> str:
         self.key_change["time_stamp"] = self.time_stamp
         base64_bytes = base64.b64encode(json.dumps(self.key_change).encode("ascii"))
-        return str(base64_bytes)
+        return str(base64_bytes, encoding="utf-8")
 
     def get_input_type(self) -> InputType:
         return InputType.KEYBOARD
@@ -104,18 +103,12 @@ class KeyboardInputListener(InputListener):
 
 
 class Mouse(Input):
-    def __init__(
-        self,
-        button1: int,
-        button2: int,
-        x: int,
-        y: int,
-    ):
+    def __init__(self, button1: int, button2: int, x: int, y: int, time_stamp=None):
         self.button1 = button1
         self.button2 = button2
         self.x = x
         self.y = y
-        self.time_stamp = time.time_ns()
+        self.time_stamp = time.time_ns() if time_stamp is None else time_stamp
 
     def serialize(self) -> str:
         return f"{self.button1},{self.button2},{self.x},{self.y},{self.time_stamp}"
